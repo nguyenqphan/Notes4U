@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import java.nio.channels.DatagramChannel;
 
+import javax.sql.RowSetReader;
+
 public class EditorActivity extends AppCompatActivity {
 
     private String action;
@@ -52,8 +54,13 @@ public class EditorActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_editor, menu);
+
+        if(action.equals(Intent.ACTION_EDIT)){
+            // Inflate the menu; this adds items to the action bar if it is present.
+            getMenuInflater().inflate(R.menu.menu_editor, menu);
+
+        }
+
         return true;
     }
 
@@ -64,9 +71,12 @@ public class EditorActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        switch (item.getItemId()){
+        switch (id){
             case android.R.id.home:
                 finishEditing();
+                break;
+            case R.id.action_delete:
+                deleteNote();
                 break;
         }
 
@@ -84,6 +94,7 @@ public class EditorActivity extends AppCompatActivity {
                 }else {
                     insertNote(newText);
                 }
+                break;
             case  Intent.ACTION_EDIT:
                 if(newText.length() == 0){
                     deleteNote();
@@ -98,6 +109,12 @@ public class EditorActivity extends AppCompatActivity {
     }
 
     private void deleteNote() {
+        getContentResolver().delete(NotesProvider.CONTENT_URI, noteFilter, null);
+
+        Toast.makeText(this, R.string.note_deleted,
+                Toast.LENGTH_SHORT).show();
+        setResult(RESULT_OK);
+        finish();
     }
 
     private void updateNote(String noteText) {
@@ -112,7 +129,9 @@ public class EditorActivity extends AppCompatActivity {
     private void insertNote(String noteText) {
         ContentValues values = new ContentValues();
         values.put(DBOpenHelper.NOTE_TEXT, noteText);
-        Uri noteUri = getContentResolver().insert(NotesProvider.CONTENT_URI, values);
+        //Uri noteUri = getContentResolver().insert(NotesProvider.CONTENT_URI, values);
+        getContentResolver().insert(NotesProvider.CONTENT_URI, values);
+
         setResult(RESULT_OK);
     }
 

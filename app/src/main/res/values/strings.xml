@@ -9,4 +9,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="new_note">New note</string>
+    <string name="action_delete">Delete</string>
+    <string name="note_deleted">Note deleted</string>
 </resources>
